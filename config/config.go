@@ -13,7 +13,7 @@ func Init() error {
 	db, err = InitDatabase()
 
 	if(err!= nil){
-		logger.Warn("Database initialization error %v", err);
+		logger.Warnf("Database initialization error %v", err.Error());
 		return err
 	}
 
