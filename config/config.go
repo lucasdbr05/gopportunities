@@ -8,6 +8,15 @@ var (
 )
 
 func Init() error {
+	var err error 
+
+	db, err = InitDatabase()
+
+	if(err!= nil){
+		logger.Warn("Database initialization error %v", err);
+		return err
+	}
+
 	return nil
 }
 
