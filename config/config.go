@@ -20,7 +20,13 @@ func Init() error {
 	return nil
 }
 
+func GetDatabase() *gorm.DB {
+	return db
+}
+
+
 func GetLogger(p string) *Logger {
 	logger := NewLogger(p)
 	return logger
 }
+

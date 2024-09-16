@@ -1,15 +1,28 @@
 package handler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"github.com/lucasdbr05/gopportunities/config"
+	"net/http"
+	"gorm.io/gorm"
 )
 
+var (
+	logger *config.Logger
+	db *gorm.DB
+)
+
+func InitHandler() {
+	logger = config.GetLogger("Handler")
+	db = config.GetDatabase()
+}
+
 func CreateOpeningHandler(ctx *gin.Context){
-	ctx.JSON(http.StatusOK, gin.H{
-		"msg": "HANDLER",
-	})
+	var request CreateOpeningRequest
+
+	ctx.BindJSON(request)
+
+	logger.Infof("%v", request)
 }
 
 func ShowOpeningHandler(ctx *gin.Context){
