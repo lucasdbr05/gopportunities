@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -42,7 +43,7 @@ func CreateOpeningHandler(ctx *gin.Context) {
 
 	if err := db.Create(&opening).Error; err != nil {
 		logger.Errorf("Database creation error: %v", err.Error())
-		sendError(ctx,http.StatusInternalServerError, "Error creating opening on database")
+		sendError(ctx, http.StatusInternalServerError, "Error creating opening on database")
 		return
 	}
 
@@ -50,25 +51,63 @@ func CreateOpeningHandler(ctx *gin.Context) {
 }
 
 func ShowOpeningHandler(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{
-		"msg": "HANDLER",
-	})
+	id := ctx.Query("id")
+
+	if id == "" {
+		sendError(ctx, http.StatusBadRequest, errParamIsRequired("id", "query").Error())
+		return
+	}
+
+	opening := schemas.Opening{} 
+
+	q := db.First(&opening, id)
+	if(q.Error != nil){
+		sendError(ctx, http.StatusBadRequest, fmt.Sprintf("opening with id %s is not found", id))
+		return
+	}
+
+	sendSuccess(ctx, "find-opening", opening)
 }
 
 func UpdateOpeningHandler(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{
-		"msg": "HANDLER",
-	})
+	
 }
 
 func DeleteOpeningHandler(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{
-		"msg": "HANDLER",
-	})
+	id := ctx.Query("id")
+
+	if id == "" {
+		sendError(ctx, http.StatusBadRequest, errParamIsRequired("id", "query").Error())
+		return
+	}
+
+	opening := schemas.Opening{} 
+
+	q := db.First(&opening, id)
+
+	if(q.Error != nil){
+		sendError(ctx, http.StatusBadRequest, fmt.Sprintf("opening with id %s is not found", id))
+		return
+	}
+	
+	del := db.Delete(&opening)
+	
+	if(del.Error != nil) {
+		sendError(ctx, http.StatusBadRequest, fmt.Sprintf("error deleting opening with id %s", id))
+		return
+	}
+
+	sendSuccess(ctx, "delete-opening", opening)
 }
 
 func ListOpeningsHandler(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{
-		"msg": "HANDLER",
-	})
+	openings := []schemas.Opening{}
+
+	query := db.Find(&openings)
+	if(query.Error != nil){
+		sendError(ctx, http.StatusInternalServerError, "error listing openings")
+	}
+
+	sendSuccess(ctx, "list-openings", openings)
+
 }
