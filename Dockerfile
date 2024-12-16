@@ -1,7 +1,7 @@
-FROM golang:1.23.4-alpine
+FROM golang:latest
 
 WORKDIR /app
 
 COPY . .
 
-ENTRYPOINT [ "go run main.go" ]
+ENTRYPOINT [ "go" ,"run", "main.go" ]
